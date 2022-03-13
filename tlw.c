@@ -5,6 +5,6 @@
 #include "tlw.h"
 
 void generate_tlw(int w, int k, double w1, double w2) {
-
+//cos tam pisze sobie dla testu
 }
 
