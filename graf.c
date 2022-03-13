@@ -62,8 +62,8 @@ struct Graph* readGraph(FILE* f) {
 	struct Graph* graph = createGraph(w * k);
 	graph->w = w;
 	graph->k = k;
-	int dest, dest1, dest2, dest3;
-	double waga, waga1, waga2, waga3;
+	int dest;
+	double waga;
 	char check, check1;
 	for (int i =1; i < w * k + 1; i++) {
 		while (fscanf(f, "%d :%lf%c%c ", &dest, &waga,&check, &check1)!=EOF) {
