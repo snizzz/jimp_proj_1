@@ -67,32 +67,12 @@ struct Graph* readGraph(FILE* f) {
 	graph->k = k;
 	int dest, dest1, dest2, dest3;
 	double waga, waga1, waga2, waga3;
-	char str1[256];
-	for (int i = 0; i < w * k + 1; i++) {
-		int j = 0;
-		fgets(str1, 256, f);
-		if (strlen(str1) > 10 && strlen(str1) < 50) {
-			sscanf(str1, "%d :%lf  %d :%lf", &dest, &waga, &dest1, &waga1);
+	char check, check1;
+	for (int i =1; i < w * k + 1; i++) {
+		while (fscanf(f, "%d :%lf%c%c ", &dest, &waga,&check, &check1)!=EOF) {
 			addEdge(graph, i, dest, waga);
-			addEdge(graph, i, dest1, waga1);
-			//printf("%d %lf %d %lf\n", dest, waga, dest1, waga1);
+			if (check == '\n'|| check1 == '\n') break;
 		}
-		if (strlen(str1) > 50 && strlen(str1) < 80) {
-			sscanf(str1, "%d :%lf  %d :%lf  %d :%lf", &dest, &waga, &dest1, &waga1, &dest2, &waga2);
-			addEdge(graph, i, dest, waga);
-			addEdge(graph, i, dest1, waga1);
-			addEdge(graph, i, dest2, waga2);
-			//printf("%d %lf %d %lf %d %lf\n", dest, waga, dest1, waga1, dest2, waga2);
-		}
-		if (strlen(str1) > 80 && strlen(str1) < 110) {
-			sscanf(str1, "%d :%lf  %d :%lf  %d :%lf  %d :%lf", &dest, &waga, &dest1, &waga1, &dest2, &waga2, &dest3, &waga3);
-			addEdge(graph, i, dest, waga);
-			addEdge(graph, i, dest1, waga1);
-			addEdge(graph, i, dest2, waga2);
-			addEdge(graph, i, dest3, waga3);
-			//printf("%d %lf %d %lf %d %lf %d %lf\n", dest, waga, dest1, waga1, dest2, waga2, dest3, waga3);
-		}
-
 	}
 	return graph;
 }
