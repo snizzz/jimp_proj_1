@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "graf.h"
-
 int main(int argc, char** argv) {
 	void writeGraphtest(struct Graph* graph, FILE *f)
 	{
