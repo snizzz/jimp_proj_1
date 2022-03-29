@@ -13,5 +13,6 @@ int main(int argc, char **argv){
 	double w2 = argc >5 ? atof(argv[5]) :1;
 	struct Graph* graph = generate_tlw(a,b,w1,w2);
         writeGraph(graph, out);
+	fclose(out);
 	return 0;	
 }

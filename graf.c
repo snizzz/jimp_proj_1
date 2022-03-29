@@ -46,7 +46,10 @@ void writeGraph(struct Graph* graph, FILE *f)
 		struct AdjListNode* pCrawl = graph->array[v].head;
 		fprintf(f, "\t ");
 		while (pCrawl) {
-			fprintf(f, "%d :%lf   ", pCrawl->dest, pCrawl->weight);
+			if(!(pCrawl->next)){
+				fprintf(f, "%d :%lf ", pCrawl->dest, pCrawl->weight);
+			}
+			else fprintf(f, "%d :%lf  ", pCrawl->dest, pCrawl->weight);
 			pCrawl = pCrawl->next;
 		}
 		fprintf(f, "\n");
@@ -56,8 +59,8 @@ void writeGraph(struct Graph* graph, FILE *f)
 
 struct Graph* readGraph(FILE* f) {
 	int w, k;
-	char str[4];
-	fgets(str, 4, f);
+	char str[12];
+	fgets(str, 12, f);
 	sscanf(str, "%d %d", &w, &k);
 	struct Graph* graph = createGraph(w * k);
 	graph->w = w;
