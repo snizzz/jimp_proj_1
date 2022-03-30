@@ -1,6 +1,3 @@
-#ifndef _GRAF_H_
-#define _GRAF_H_
-
 #include <stdio.h>
 
 struct AdjListNode
@@ -25,5 +22,3 @@ struct Graph* createGraph(int V);
 struct AdjListNode* newAdjListNode(int dest, double weight);
 void writeGraph(struct Graph* graph, FILE* f);
 struct Graph* readGraph(FILE* f);
-
-#endif

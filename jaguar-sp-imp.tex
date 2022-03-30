@@ -1,0 +1,177 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{Kuźmicki Maciej, Skiba Szymon}
+\rhead{Specyfikacja implementacyjna w C: jaguar}
+\usepackage{amssymb,amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{lastpage}
+\usepackage{amsmath,amscd}
+\usepackage[all,cmtip]{xy}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
+\usepackage[unicode=true]{hyperref}
+\hypersetup{
+            pdftitle={Specyfikacja implementacyjna generatora i analizatora grafów: jaguar},
+            pdfauthor={Kuźmicki Maciej, Skiba Szymon},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{multicol}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\title{Specyfikacja implementacyjna generatora i analizatora grafów: \texttt{jaguar}}
+\author{Kuźmicki Maciej, Skiba Szymon}
+\date{16.03.2022}
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\section{Informacje ogólne}\label{header-n231}
+\cfoot{Page \thepage \hspace{1pt} of \pageref{LastPage}}
+Program \texttt{jaguar} zostanie napisany w języku C w edytorze tekstu o nazwie \texttt{vim} w środowisku \texttt{Ubuntu for Windows}. Wszystkie kody źródłowe programu umieszczane będą na zdalnym repozytorium w systemie \texttt{projektor} z wykorzystaniem systemu kontroli wersji \texttt{git}. Do napisania programu zostaną użyte następujące biblioteki:
+\begin{itemize}
+\item
+\texttt{stdio.h} - do korzystania z operacji wejścia/wyjścia, aby móc odczytywać oraz zapisywać dane z/do pliku;
+\item
+\texttt{stdlib.h} - do korzystania z funkcji alokujących pamięć oraz generujących losowe wartości liczbowe;
+\item
+\texttt{stdbool.h} - do korzystania z wartości boolean w programie;
+\item
+\texttt{limits.h} - do korzystania ze stałych liczbowych minimalnych/maksymalnych wartości danego typu danych;
+\item
+\texttt{time.h} - do pozyskiwania aktualnego czasu komputera w celu użycia go w funkcji losującej wagi.
+\end{itemize}
+
+
+\section{Zastosowane algorytmy}\label{header-n233}
+\begin{itemize}
+\item
+\texttt{Jaguar} do sprawdzenia spójności danego grafu będzie wykorzystywał algorytm BFS. Polega on na dodaniu do kolejki wierzchołka startowego a następnie na dodawaniu do niej wszystkich sąsiadów wierzchołka znajdującego się na początku kolejki. Po dodaniu wierzchołka do kolejki zaznaczamy w specjalnie stworzonej tablicy, że dany wierzchołek został odwiedzony. Czynności powtarzamy dopóki kolejka będzie zawierała jakieś elementy.
+\item
+Do wyznaczenia najkrótszej ścieżki pomiędzy dwoma dowolnymi wierzchołkami zostanie wykorzystany algorytm Dijkstry. Jedynym warunkiem wymaganym, aby algorytm ten zadziałał jest to, żeby wagi krawędzi były nieujemne. Wyznacza on odległości do każdego wierzchołka z wierzchołka startowego. W każdym przejściu z wierzchołka do wierzchołka wybierany jest taki, do którego droga jest najkrótsza, analizuje wtedy krawędzi wychodzące z tego wierzchołka i jeśli koszty tych są mniejsze od aktualnego kosztu dotarcia do danego wierzchołka to ustawia dany wierzchołek jako poprzednik wierzchołka, do którego prowadzi ta krawędź.
+
+\item
+Aby generować graf spójny program wykorzysta algorytm „recursive backtracker”. Polega on na wyborze wierzchołka i wybraniu krawędzi do następnego wierzchołka, który jeszcze nie został odwiedzony i odłożeniu obecnego wierzchołka na stos. Jeżeli wszystkie sąsiednie wierzchołki były już odwiedzone program „wykłada” ze stosu kolejne wierzchołki aż do napotkania wierzchołka z nieodwiedzonymi sąsiadami. Algorytm kończy działanie gdy dotrze ponownie do startowego wierzchołka.
+\end{itemize}
+
+\section{Podział na moduły}\label{header-n279}
+Program \texttt{jaguar} zostanie podzielony na 8 modułów:
+\begin{itemize}
+\item
+\texttt{main.c} - główny moduł obsługujący argumenty wywołania (flagi), błędy oraz wszystkie pozostałe moduły;
+\item
+\texttt{graf.h} -  moduł obsługujący wczytywanie/wypisywanie grafu z/do pliku oraz przechowywanie go w pamięci komputera za pomocą trzech struktur, zawierający również deklaracje następujących funkcji:
+\begin{itemize}
+\item
+\texttt{addEdge()} - funkcja przyjmuje strukturę opisującą graf, wierzchołek początkowy oraz końcowy danej krawędzi oraz jego wagę, po czym dodaje krawędź do pamięci, natomiast nic nie zwraca;
+\item
+\texttt{createGraph()} - funkcja przyjmuje liczbę wierzchołków, następnie alokuje w pamięci odpowiednią ilość miejsca na dany graf oraz zwraca strukturę zawierającą pusty graf;
+\item
+\texttt{readGraph()} - funkcja przyjmuje wskaźnik do pliku, z którego odczytuje graf, następnie zwraca uzupełnioną krawędziami oraz ich wagami struktrurę zawierającą graf;
+\item
+\texttt{newAdjListNode()} - funkcja przyjmuje wierzchołek, do którego prowadzi krawędź oraz wagę tej krawędzi i tworzy nową krawędź jako strukturę AdjListNode i ją zwraca;
+\item
+\texttt{writeGraph()} - funkcja przyjmuje wskaźnik do pliku, do którego ma zostać zapisany graf oraz strukturę zawierającą graf, następnie zapisuje graf do pliku, natomiast nic nie zwraca;
+\end{itemize} 
+\item
+\texttt{tlw.h} - moduł odpowiedzialny za utworzenie grafu zawierającego krawędzie pomiędzy każdą sąsiadującą parą wierzchołków, zawiera deklaracje następującej funkcji:
+\begin{itemize}
+\item
+\verb|generate_tlw()| - funkcja przyjmującą liczbę wierszy, kolumn oraz przedział wag \texttt{d1-d2}, funkcja odpowiedzialna za wygenerowanie grafu zawierającego krawędzie pomiędzy każdą sasiadującą ze sobą parą wierzchołków oraz za zapisanie danego grafu do odpowiednich struktur zawartych w pliku \texttt{graf.h}, funkcja nic nie zwraca;
+\end{itemize}
+\item
+\texttt{bfs.h} - moduł odpowiedzialny za wykorzystanie algorytmu BFS w programie, zawiera deklaracje następujących funkcji:
+\begin{itemize}
+\item
+\verb|if_connected()| - funkcja przyjmuje strukturę przechowującą graf, sprawdza czy jest on spójny a następnie zwraca wartość typu boolean;
+\item
+\verb|path_bfs()| - funkcja przyjmuje strukturę przechowującą graf, wierzchołek początkowy oraz końcowy, funkcja ta szuka najkrótszej drogi bez względu na wagę napotkanych krawędzi oraz wypisuje tę drogę, natomiast nie zwraca żadnej wartości;
+\end{itemize}
+\item
+\texttt{bruteforce.h} - moduł ten odpowiedzialny jest za wygenerowanie grafu spójnego metodą bruteforce, zawiera deklaracje następujących funkcji:
+\begin{itemize}
+\item
+\verb|generate_bf()| - funkcja ta przyjmuje liczbę wierzchołków, krawędzi oraz przedział wag \texttt{d1-d2}, generuje ona graf spójny metodą bruteforce, a następnie zapisuje go do odpowiednich struktur zawartych w pliku \texttt{graf.h}, funkcja nic nie zwraca;
+\end{itemize} 
+\item
+\texttt{backtracker.h} - moduł ten jest odpowiedzialny za generowanie grafu spójnego z wykorzystaniem algorytmu "recursive backtracker" oraz za zapisanie go do pliku z wykorzystaniem funkcji z modułu \texttt{graf.h}, zawiera deklaracje następujących funkcji:
+\begin{itemize}
+\item
+\verb|generate_bt()| - funkcja przyjmuje liczbę wierszy oraz kolumn, przedział wag i tworzy graf za pomocą algorytmu "recursive backtracker", zwraca strukturę grafu;
+\end{itemize}
+\item
+\texttt{stack.h} - moduł ten jest odpowiedzialny za prawidłową obsługę stosu, zawiera strukturę opisującą stos oraz deklaracje następujących funkcji:
+\begin{itemize}
+\item
+\texttt{isFull()} - funkcja ta sprawdza czy stos jest przepełniony, przyjmuje strukturę zawierającą opis stosu oraz zwraca informację o tym, czy stos jest przepełniony;
+\item
+\texttt{isEmpty()} - funkcja ta sprawdza czy stos jest pusty, przyjmuje strukturę zawierającą opis stosu oraz zwraca informację o tym, czy stos jest pusty;
+\item
+\texttt{createStack()} - funkcja ta przyjmuje wielkość stosu, następnie alokuje pamięć dla stosu o podanej wielkości oraz zwraca ten stos;
+\item
+\texttt{push()} - funkcja ta przyjmuje strukturę opisującą stos oraz nowy element stosu, następnie dodaje go do stosu, funkcja zwraca informację o tym, czy udało się dodać nowy element do stosu;
+\item
+\texttt{pop()} - funkcja ta przyjmuje strukturę opisującą stos, następnie o ile to możliwe zdejmuje element ze stosu, po czym zwraca informację o tym, czy udało się zdjąć element ze stosu;
+\item
+\texttt{peek()} - przyjmuje wskaźnik na strukturę stosu i służy do podejrzenia jego pierwszego elementu oraz zwraca ten element; 
+\end{itemize}
+\item
+\texttt{dijkstra.h} - moduł ten jest odpowiedzialny za sprawdzenie czy istnieje droga i znajdowanie najkrótszej drogi pomiędzy dwoma punktami wykorzystując algorytm dijkstry, zawiera deklaracje następujących funkcji:
+\begin{itemize}
+\item
+\texttt{dijkstra()} – funkcja ta przyjmuje wskaźnik na strukturę grafu, wierzchołek startowy, wierzchołek docelowy oraz informacje w jakim formacie ma być pokazana droga. Funkcja wypisuje najkrótszą drogę lub komunikat o braku drogi, nie zwraca nic.
+
+\end{itemize} 
+\end{itemize}
+
+
+
+
+\section{Opis testów programu}\label{header-n281}
+Aby program działał jak należy, do każdego modułu zostanie napisany oddzielny plik zawierający funkcję \texttt{main} testujący dany moduł. Dzięki takiemu rozwiązaniu będziemy wiedzieli, w których modułach występują błędy oraz gdzie możemy je naprawić.
+
+
+
+\end{document}

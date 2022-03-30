@@ -1,6 +1,3 @@
-#ifndef _STACK_H_
-#define _STACK_H_
-
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,5 +9,3 @@ int isEmpty2(struct Stack* stack);
 void push(struct Stack* stack, int item);
 int pop(struct Stack* stack);
 int peek(struct Stack* stack);
-
-#endif

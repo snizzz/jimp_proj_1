@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
-#include <string.h>
 #include "graf.h"
+
 
 struct AdjListNode* newAdjListNode(int dest, double weight)
 {
@@ -46,10 +46,7 @@ void writeGraph(struct Graph* graph, FILE *f)
 		struct AdjListNode* pCrawl = graph->array[v].head;
 		fprintf(f, "\t ");
 		while (pCrawl) {
-			if(!(pCrawl->next)){
-				fprintf(f, "%d :%lf ", pCrawl->dest, pCrawl->weight);
-			}
-			else fprintf(f, "%d :%lf  ", pCrawl->dest, pCrawl->weight);
+			fprintf(f, "%d :%lf   ", pCrawl->dest, pCrawl->weight);
 			pCrawl = pCrawl->next;
 		}
 		fprintf(f, "\n");
@@ -59,8 +56,8 @@ void writeGraph(struct Graph* graph, FILE *f)
 
 struct Graph* readGraph(FILE* f) {
 	int w, k;
-	char str[12];
-	fgets(str, 12, f);
+	char str[4];
+	fgets(str, 4, f);
 	sscanf(str, "%d %d", &w, &k);
 	struct Graph* graph = createGraph(w * k);
 	graph->w = w;
@@ -76,3 +73,7 @@ struct Graph* readGraph(FILE* f) {
 	}
 	return graph;
 }
+
+
+
+

@@ -1,0 +1,213 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{Kuźmicki Maciej, Skiba Szymon}
+\rhead{Specyfikacja funkcjonalna w C: jaguar}
+\usepackage{amssymb,amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{lastpage}
+\usepackage{amsmath,amscd}
+\usepackage[all,cmtip]{xy}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
+\usepackage[unicode=true]{hyperref}
+\hypersetup{
+            pdftitle={Specyfikacja funkcjonalna generatora i analizatora grafów: jaguar},
+            pdfauthor={Kuźmicki Maciej, Skiba Szymon},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{multicol}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\title{Specyfikacja funkcjonalna generatora i analizatora grafów: \texttt{jaguar}}
+\author{Kuźmicki Maciej, Skiba Szymon}
+\date{09.03.2022}
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\section{Cel projektu}\label{header-n231}
+\cfoot{Page \thepage \hspace{1pt} of \pageref{LastPage}}
+Program \texttt{jaguar} ma na celu tworzenie oraz analizowanie grafów i dróg pomiędzy wierzchołkami. Program działa w trybie wsadowym/nie interaktywnym. Użytkownik ma w nim możliwość generowania grafu w trzech trybach oraz wczytywania do programu grafu z pliku o odpowiednim formacie. \texttt{Jaguar} następnie zgodnie z wybranymi przez użytkownika trybami będzie analizować graf.  Generowany i analizowany graf będzie zawsze miał formę prostokąta o liczbie wierzchołków równej \verb|liczba_wierszy*liczba_kolumn|,  gdzie wierzchołki będą numerowane od 0 wierszami.
+
+\section{Dane wejściowe i wyjściowe}\label{header-n233}
+
+Argumenty powinny zostać podawane i używane w przypadku użycia odpowiedniej flagi co zostało opisane w akapicie “Argumenty wywołania programu”. Podawane w wywołaniu argumenty powinny mieć następujący format:
+\begin{itemize}
+\item
+liczba wierszy (w), liczba kolumn (k): liczby naturalne różne od zera; 
+\item
+początek przedziału(d1) i koniec przedziału(d2) wag: liczby rzeczywiste dodatnie 
+wierzchołek startowy i wierzchołek docelowy: numer wierzchołków znajdujące się w przedziale                              {0…((liczba wierszy*liczba kolumn)-1)};
+\item
+plik wyjściowy w trybie in i wyjściowy w trybie out:  w pierwszym wierszu zawiera kolejno liczbę wierszy i liczbę kolumn w następnych wierszach, które kolejne numery odpowiadają numerom wierzchołków, sąsiadów tych wierzchołków i po dwukropku wagę łączącej krawędzi np.:
+
+\texttt{2 3\\
+1:0,88435 3:1,3444\\
+0:1,12121 2:0,2342 4:1,2111\\
+1:0,76883 5:0,2883\\
+0:0,79887 4:1,3496\\
+1:1,76344 3:1,8677 5:0,1323\\
+2:1,12312 4:1,2932}
+
+Dane wyjściowe zależą od użytych flag i mają dany format:
+\item
+Odległość z wagą: \texttt{Distance w1-w2:<suma wag>; Route: <wierzchołki przez które prowadzi najkrótsza droga>};
+\item
+Odległość bez wagi czyli najmniejsza liczba pokonanych krawędzi pomiędzy dwoma wierzchołkami: \texttt{Distance w1-w2}: \texttt{<liczba krawędzi>; Route}: \texttt{<wierzchołki przez które prowadzi najkrótsza droga>};
+\item
+Komunikat o spójności grafu: \texttt{Connected graph}: \texttt{<yes/no>}.
+
+\end{itemize}
+\section{Argumenty wywołania programu}\label{header-n256}
+Program \texttt{jaguar} akceptuje następujące argumenty wywołania:
+
+\begin{itemize}
+\item
+  \texttt{-\/-mode\ in/out\ plik} informuje czy program ma wygenerować graf do pliku o domyślnej nazwie out (opcja \texttt{out}) czy wczytać podany graf z pliku (opcja \texttt{in}), w przypadku trybu \texttt{out} nazwa pliku do zapisania grafu jest opcjonalna, w przypadku trybu in trzeba podać nazwę pliku zawierającego graf w odpowiednim formacie;
+
+\item
+  Przy użyciu flagi \texttt{-\/-mode\ out:}
+
+\texttt{-\/-s w k d1 d2 n} tej flagi używamy do utworzenia grafu spójnego metodą bruteforce \texttt{w-liczba wierszy, k-liczba kolumn d1-początek przedziału wag, d2-koniec przedziału wag, n-maksymalna liczba prób wygenerowania grafu spójnego} (podanie przedziału i liczby prób jest opcjonalne, domyślna wartość przedziału jest od 0 do 1, domyślna wartość prób to aż do otrzymania grafu spójnego);
+
+
+\texttt{-\/-tlw w k d1 d2} tej flagi używamy do utworzenia grafu zawierającego krawędzie pomiędzy każdą parą sąsiadujących ze sobą wierzchołków, \texttt{w-liczba wierszy, k-liczba kolumn d1-początek przedziału wag, d2-koniec przedziału wag} (podanie przedziału jest opcjonalne,domyślna wartość pomiędzy 0 a 1);
+
+
+\texttt{-\/-tl w k d1 d2} tej flagi używamy do utworzenia losowego grafu (nie musi być spójny), \texttt{w-liczba wierszy, k-liczba kolumn d1-początek przedziału wag, d2-koniec przedziału wag} (podanie przedziału jest opcjonalne,domyślna wartość pomiędzy 0 a 1);
+
+\texttt{-\/-sbt w k d1 d2} tej flagi używamy do tworzenia grafu za pomocą algorytmu “recursive back-tracker” generującego graf spójny za pierwszym podejściem, \texttt{w-liczba wierszy, k-liczba kolumn d1-początek przedziału wag, d2-koniec przedziału wag} (podanie przedziału jest opcjonalne, domyślna wartość pomiędzy 0 a 1);
+
+\item
+\texttt{-\/-if\_connected}  do sprawdzenia czy graf jest spójny;
+\item
+\texttt{-\/-distance\ <wierzchołek\_startowy>\ <wierzchołek\_docelowy>\ <tryb>} liczy najkrótszą odległość pomiędzy dwoma wierzchołkami biorąc pod uwagę wagę, \texttt{<tryb>} daje opcje użycia flagi -w aby znaleziona droga została pokazana przy wypisywaniu również z wagami, domyślnie program wypisuje drogę bez wag;
+\item
+\texttt{-\/-d\_noweigth\ <wierzchołek\_startowy> <wierzchołek\_docelowy>} liczy długość pomiędzy dwoma wierzchołkami nie biorąc pod uwagę wagi;
+\item
+\texttt{-\/-ignore\_errors} do ignorowania błędów, które nie wpływają na działanie programu (program nie wypisze komunikatu o takich błędach);
+\item
+\texttt{-\/-help} wyświetla pomoc dla użytkownika.
+
+
+
+
+
+\end{itemize}
+
+Przykładowe wywołania programu:
+
+\begin{itemize}
+\item
+\verb|./jaguar| -\/-\verb|mode out| -\/-\verb|s 2 3 0 1| -\/-\verb|distance 0 5 -w|
+
+Program wygeneruje spójny graf o liczbie wierszy równej 2 i liczbie kolumn 3 czyli o 6 wierzchołkach numerowanymi od 0 do 5 i zapisze go w pliku o domyślnej nazwie out.txt. Policzy również drogę pomiędzy wierzchołkiem 0 i 5. Przykład wyjścia (graf(wizualicja grafu rys.1) w pliku out.txt i komunikat o drodze):
+
+\texttt{2 3\\
+ 1:0,88435 3:1,3444\\
+0:1,12121 2:0,2342 4:1,2111\\
+1:0,76883 5:0,2883\\
+0:0,79887 4:1,3496\\
+1:1,76344 3:1,8677 5:0,1323\\
+2:1,12312 4:1,2932}
+
+\begin{equation*}
+\xymatrix@C=3cm{
+  0 \ar[r]|{0,88435} \ar@<-2pt>[d]_{1,3444} & 1 \ar@<-2pt>[d]_{1,21111} \ar[r]|{0,2342}\ar@<-6pt>[l]|{1,12121} & 2 \ar@<-4pt>[d]_{0,2883}\ar@<-6pt>[l]|{0,76883}\\
+   3\ar@<-2pt>[u]_{0,79887} \ar[r]|{1,3496}   & 4 \ar@<-2pt>[u]_{1,76344} \ar@<-0pt>[r]|{0,1323} \ar@<-6pt>[l]|{1,8677} & 5 \ar@<-6pt>[l]|{1,2932} \ar@<-2pt>[u]_{1,12312}
+}
+\end{equation*}
+\begin{center}
+(rys. 1)
+\end{center}
+
+ 
+\texttt{Distance 0-5}: \texttt{1,40685; Route}: \texttt{0-(0,88435)->1-(0,2342)->2-(0,2883)->5}
+\item
+\verb|./jaguar| -\/-\verb|mode in| \verb|graf.txt| -\/-\verb|if_connected|
+
+Program wczyta graf z pliku graf.txt oraz sprawdzi czy jest on spójny. Przykład wyjścia:\\
+\texttt{Connected graph}: \texttt{yes} 
+
+
+
+\end{itemize}
+
+\section{Teoria}\label{header-n279}
+
+Program będzie korzystał z algorytmu BFS do przeszukiwania grafu wszerz po to, by sprawdzić czy jest on spójny. Grafy spójne będą generowane na dwa sposoby: za pomocą przerobionego algorytmu “recursive back-tracker” używanego do generowania labirynt, ponieważ jaguar generuje grafy o zbliżonej do labiryntów budowie; oraz metodą bruteforce generując losowe grafy aż do otrzymania grafu spójnego. Zarówno w trybie \texttt{-\/-mode in} oraz \texttt{-\/-mode out} program będzie korzystał z algorytmu Dijkstry do znajdowania najkrótszej drogi pomiędzy dowolnymi dwoma wierzchołkami, biorąc pod uwagę wagi. Najkrótsza droga nie biorąc pod uwagę wag a jedynie liczbę krawędzi będzie znajdowana za pomocą algorytmu BFS. W przypadku niespójności grafu i niemożliwości połączenia dwóch punktów i tym samym znalezienia najkrótszej drogi program wyświetli odpowiedni komunikat. 
+	Graf będzie przechowywany w formie listy sąsiedztwa  oraz w ten sposób będzie ukazany w pliku wyjściowym. 
+
+
+
+\section{Komunikaty błędów}\label{header-n281}
+
+\begin{itemize}
+\item
+  \texttt{BŁĄD\ 1:\ użyto\ niewłaściwej\ flagi\ -\/-przykład\_niewłaściwej\_flagi\ do\ podanego\ trybu}
+
+  Gdy użyjemy którejś z flag (\texttt{-\/-s, -\/-tlw,  -\/-tl}) zarezerwowanych dla \texttt{-\/-mode out} program zignoruje te flagi oraz wyświetli komunikat o błędzie.
+\item
+  \texttt{BŁĄD\ 2:\ podano\ nieprawidłowy\ argument\ nieprawidłowy\_argument\ do\ flagi\ -\/-mode}
+
+ Gdy po fladze \texttt{-\/-mode} podamy argument różny od \texttt{in/out} program zakończy swoje działanie i wyświetli komunikat o błędzie.
+\item
+\texttt{BŁĄD\ 3:\ nie\ odnaleziono\ pliku\ nazwa\_pliku}
+
+Gdy po użyciu flagi \texttt{-\/-mode in} \verb|nazwa_pliku| program nie odnajdzie w podanej ścieżce pliku o nazwie \verb|nazwa_pliku| to zakończy swoje działanie i wyświetli komunikat o błędzie.
+
+\item
+\texttt{BŁĄD\ 4:\ użyto\ nieistniejącej\ flagi\ nieistniejaca\_flaga}
+
+Gdy podamy nieistniejącą flagę program zignoruje ją oraz wyświetli komunikat o błędzie
+\item
+\texttt{BŁĄD\ 5:\ niewłaściwy\ format\ danych\ wejściowych\ w\ pliku\ nazwa\_pliku}
+
+Gdy w podanym pliku dane wejściowe będą miały niewłaściwy format program zakończy swoje działanie oraz wypisze komunikat o błędzie.
+
+\end{itemize}
+
+\end{document}
