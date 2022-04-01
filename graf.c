@@ -23,9 +23,9 @@ struct Graph* createGraph(int V)
 	graph->V = V;
 
 	graph->array = (struct AdjList*)
-		malloc(V * sizeof(struct AdjList));
+		malloc((V+1) * sizeof(struct AdjList));
 
-	for (int i = 0; i < V; ++i)
+	for (int i = 0; i < V+1; ++i)
 		graph->array[i].head = NULL;
 
 	return graph;

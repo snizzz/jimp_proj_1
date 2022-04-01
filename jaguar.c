@@ -27,6 +27,10 @@ int main(int argc, char **argv){
 				if(argv[i+2][0] != '-'){
 					out = fopen(argv[i+2], "w");
 					mode = 2;
+				}
+				else{
+					mode =2;
+					out = fopen("out", "w");
 				}	
 			}
 			else if(argv[i+1][0] != '-') fprintf(stderr, "BLAD 2: Podano nieprawidlowy argument %s do flagi --mode\n", argv[i+1]);
@@ -35,7 +39,7 @@ int main(int argc, char **argv){
 	for(int i =1; i<argc; i++){
 		if(strcmp(argv[i], "--if_connected") == 0 && mode == 1) {
 			if(if_connected(graph)) fprintf(stdout, "Wczytany graf jest spójny\n");
-			else if(if_connected(graph)) fprintf(stdout, "Wczytany graf nie jest spójny\n");
+			else fprintf(stdout, "Wczytany graf nie jest spójny\n");
 		}
 	}
 	for(int i =1; i <argc; i++) {
