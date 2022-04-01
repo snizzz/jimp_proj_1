@@ -3,29 +3,49 @@
 #include <stdlib.h>
 #include "graf.h"
 #include "bfs.h"
+
+void push(struct Queue* queue, int dest)
+{
+	while(queue->next != NULL) queue = queue->next;
+	struct Queue* new = (struct Queue*) malloc(sizeof(struct Queue));
+	new->dest = dest;
+	new->next = NULL;
+	queue->next=new;
+}
+
+struct Queue* pop_delete(struct Queue* queue)
+{
+	struct Queue *temp = queue;
+	queue=queue->next;
+	free(temp);
+	return queue;
+}
+
+int pop(struct Queue* queue)
+{
+	return queue->dest;
+}
+
 bool if_connected(struct Graph* graph)
 {
-	bool *odwiedzone = malloc((graph->k*graph->w)*sizeof*odwiedzone);
-	int *kolejka = malloc((graph->k*graph->w)*sizeof*kolejka);
-	for(int i =0; i<graph->k*graph->w;i++) kolejka[i]=-1;
-	for(int i=0;i<graph->V;i++) odwiedzone[i] = false;
-	kolejka[0] = 0;
-	odwiedzone[0] = true;
-	int kolejka_licznik=1;
-	for(int i=0; i<graph->V; i++){
-		int w = kolejka[i];
-	      	struct AdjListNode* pCrawl = graph->array[i+1].head;
+	bool *visited = malloc((graph->k*graph->w)*sizeof*visited);
+	struct Queue* queue = (struct Queue*) malloc(sizeof(struct Queue));
+	for(int i=0;i<graph->V;i++) visited[i] = false;
+	push(queue,0);
+	visited[0] = true;
+	while(queue!=NULL){
+		int w = pop(queue);
+	      	struct AdjListNode* pCrawl = graph->array[w+1].head;
 		while(pCrawl) {
-			int j =0;
-			if(!odwiedzone[pCrawl->dest] && pCrawl->weight !=0){
-				kolejka[kolejka_licznik++] = pCrawl->dest;
-				odwiedzone[pCrawl->dest] = true;
+			if(!visited[pCrawl->dest] && pCrawl->weight !=0){
+				push(queue,pCrawl->dest);
+				visited[pCrawl->dest] = true;
 			}
 			pCrawl = pCrawl->next;
-			j++;
 		}
+		queue = pop_delete(queue);
 	}
-	for(int i =0; i<graph->V; i++) if(odwiedzone[i] == false) return false;
+	for(int i =0; i<graph->V; i++) if(visited[i] == false) return false;
 	return true;
 }
 
