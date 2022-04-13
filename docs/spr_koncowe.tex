@@ -1,0 +1,174 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{Kuźmicki Maciej, Skiba Szymon}
+\rhead{Sprawozdanie z projektu w C: jaguar}
+\usepackage{amssymb,amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{lastpage}
+\usepackage{amsmath,amscd}
+\usepackage[all,cmtip]{xy}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
+\usepackage[unicode=true]{hyperref}
+\hypersetup{
+            pdftitle={Sprawozdanie z projektu w C: jaguar},
+            pdfauthor={Kuźmicki Maciej, Skiba Szymon},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{multicol}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\title{Sprawozdanie z projektu w C: \texttt{jaguar}}
+\author{Kuźmicki Maciej, Skiba Szymon}
+\date{13.04.2022}
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\section{Informacje ogólne}\label{header-n231}
+\cfoot{Page \thepage \hspace{1pt} of \pageref{LastPage}}
+Celem projektu było napisanie programu, który wykonywałby operacje na grafach. Do jego zadań należy generowanie grafu na cztery różne sposoby, sprawdzanie spójności oraz wyznaczanie najkrótszej ścieżki pomiędzy dwoma dowolnymi wierzchołkami. Program napisany został w języku C w edytorze tekstowym \texttt{vim}, natomiat uruchomić możemy go, bądź testy poszczególnych modułów za pomocą komendy \texttt{make}.
+
+
+\section{Zmiany powstałe w trakcie implementacji}\label{header-n233}
+ Podczas implementacji zostało wprowadzonych sporo zmian, które zostaną przedstawione poniżej z podziałem na poszczególne moduły (funkcje w modułach, które pozostały bez zmian zostaną pominięte, odnaleźć je można w specyfikacji implementacyjnej:
+
+\begin{itemize}
+
+\item
+\texttt{jaguar.c} - oryginalnie moduł ten nosił nazwę \texttt{main.c}, jednak zdecydowaliśmy się ją zmienić, pomimo tego sama funkcjonalność tego modułu pozostała bez zmian;
+
+\item
+\texttt{graf.h} - w tym module zdecydowaliśmy się zredukować liczbę używanych struktur tak, aby kod był czytelniejszy. Zmianie uległa również liczba funkcji, ponownie zredukowaliśmy jedną funkcję. Następujące zmiany:
+\begin{itemize}
+\item
+addToGraph() - funkcja ta przyjmuje strukturę grafu, wierzchołek początkowy, końcowy oraz wagę, zapisuje ona krawędzie do struktury, nic nie zwraca;
+\item
+makeGraph() - funkcja ta alokuje w pamięci komputera pamięć dla danego grafu, przyjmuje ilość kolumn oraz wierszy, zwraca pustą strukturę grafu;
+\end{itemize}
+
+\item
+\texttt{bfs.h} - w tym module w celu zwiększenia wydajności samego algorytmu zaimplementowane zostały funkcje obsługujące kolejkę typu FIFO oraz została zaimplementowana struktura przechowująca kolejkę, zrezygnowaliśmy natomiast z wyznaczania drogi za pomocą algorytmu BFS. Następującej zmiany:
+\begin{itemize}
+\item
+push() - funkcja ta dodaje element do kolejki, przyjmuje strukturę kolejki oraz element do dodania, nic nie zwraca;
+\item
+popDelete() - funkcja ta usuwa element z kolejki, przyjmuje strukturę kolejke oraz ją zwraca kolejke;
+\item
+pop() - funkcja ta pokazuje element znajdujący się na początku kolejki, przyjmuje strukturę kolejki oraz zwraca wartość elementu znajdującego się na początku kolejki;
+\end{itemize}
+
+\item
+\texttt{tlw.h} - w tym module zmieniła się jedynie nazwa znajdującej się tam funkcji w celu ujednolicenia konwencji nazewnictwa funkcji oraz zmienił się tym zwracanej wartości, mianowicie funkcja zawarta w tym module zwraca strukturę zawierającą graf;
+\item
+\texttt{backtracker.h} - w tym module została dodana funkcja losująca aby zoptymalizować działanie i wygląd kodu;
+\begin{itemize}
+\item
+diceroll() - losuje liczbe losowa z przedzialu 0-1;
+\end{itemize}
+\item
+\texttt{dijkstra.h} - w tym module zostało dodane wykorzystanie kolejki priorytetowej;
+\item
+\texttt{prioque.h} - ten moduł został dodany aby wykorzystać go w module odpowiedzialnym za algorytm dijkstry;
+\begin{itemize}
+\item
+addpQ() - dodaje zmienna do kolejki;
+\item
+emptypQ() - sprawdza czy kolejka jest pusta;
+\item
+poppQ() - zwraca pierwszy element kolejki;
+\item
+freepQ() - zwalnia zaalokowna pamiec;
+\end{itemize}
+\item
+\texttt{bruteforce.h} - w tym module została dodana funkcja losująca aby zoptymalizować działanie i wygląd kodu.
+\begin{itemize}
+\item
+diceroll() - losuje liczbe losowa z przedzialu 0-1;
+\end{itemize}
+\end{itemize}
+\section{Przykładowe wywołania programu}\label{header-n279}
+\begin{itemize}
+\item
+\verb|./jaguar --mode out exit --tlw 3 3 5 6| 
+
+Po wywołaniu programu w ten sposób powinniśmy otrzymać plik o nazwie \texttt{exit} zawierający graf o liczbie wierszy równej 3 oraz liczbie krawędzi równej 3, każda krawędź powinna zawierać wagę z przedziału od 5 do 6. Ponadto graf ten powinien posiadać krawędź pomiędzy każdymi dwoma sąsiadującymi ze sobą wierzchołkami. Zawartość pliku \texttt{exit}:
+
+3 3
+
+         3 :5.394383  1 :5.840188
+
+         4 :5.197551  2 :5.911647  0 :5.768230
+ 
+        5 :5.628871  1 :5.477397
+
+         4 :5.952230  6 :5.513401  0 :5.364784
+
+         7 :5.606969  1 :5.141603  3 :5.717297  5 :5.635712
+
+         8 :5.016301  2 :5.804177  4 :5.137232
+
+         3 :5.400944  7 :5.156679
+
+         4 :5.839112  8 :5.512932  6 :5.218257
+
+         7 :5.524287  5 :5.637552
+
+\item
+\verb|./jaguar --mode in exit --if_connected|
+
+Po wywołaniu programu w ten sposób powinniśmy otrzymać informację o tym, czy graf zawarty w pliku \texttt{exit} jest spójny. Komunikat po wywołaniu:
+
+\verb|Connected graph: yes|
+\end{itemize}
+\section{Komunikaty błędów}\label{header-n279}
+Wszystkie komunikaty błędów przewidziane w specyfikacji funkcjonalnej w zakładce \texttt{Komunikaty błędów} zostały zaimplementowane poza błędem numer 4, ponieważ stwierdziliśmy, że w sytuacji w której użytkownik użyje nieistniejącej flagi program może to zignorować. Błąd w który polega na nie podaniu żadnych argumntów jest obsługiwany poprzez wyświetlenie helpa
+
+\section{Wnioski}\label{header-n279}
+Po wykonaniu implementacji struktury grafu i funkcji z nim związanych możemy stwierdzić że graf jest bardzo uniwersalną i złożoną strukturą. Graf ma bardzo proste założenia i do jego przeszukiwania i tworzenia można wykorzystać proste algorytmy jak te w modułach tlw.h i bruteforce.h. Jednak pozwala on też na wykorzystanie bardziej wydajnych algorytmów i konkretnych zadaniach jak algorytm dijkstry użyty do znajdywania drogi, "recursive back-tracker" użyty do tworzenia grafu spójnego lub algorytm bfs użyty do sprawdzania spójności grafu. Po doprowadzeniu projektu do końca zauważyliśmy jak ważna jest systematyczna praca i wywiązywanie się z terminów. Istotny jest również jasny i odpowiedni podział pracy podczas pracy nad kodem. 
+
+
+\end{document}
